@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Blockchain - Web API</title>
+    <!-- Added link to the jQuery library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  </head>
+  <body>
+
+
+    <form >
+    <p>   Enter Block Number to Retrieve: <input type="text" id="getBlockValue" value="">
+      <input type="submit" id="getBlockForm"></p>
+    </form>
+
+    <br>
+
+    <form>   Enter the text for the new block's body...<br>
+      <textarea rows="6" cols="50" name="blockBody" id="getBlockBody" value="" placeholder="Enter text here..."></textarea>
+      <input type="submit" id="newBlockBody" >
+    </form>
+
+    <br>
+
+    <h4>Results: </h4><h4 id="returnedBlock"></h4>
+    
+    <p><input type="submit" id="goHome" value="Clear Results"></p>
+
+    <script type="text/javascript">
+      
+      $(document).ready( () => { 
+        $("#returnedBlock").text("");
+
+        $("#goHome").on("click", (e) => {
+          e.preventDefault();
+          let queryURL = "";
+          $.ajax({ 
+            url: queryURL,
+            method: "GET",
+            success: (res) => {
+              // console.log("res", res);
+              $("#returnedBlock").text("");
+              $("#getBlockValue").val("");
+              $("#getBlockBody").val("");
+              queryURL = "/block";
+            }
+          })
+        });
+
+        $("#getBlockForm").on("click", (e) => {
+          e.preventDefault();
+          $("#getBlockBody").val("");
+          $("#returnedBlock").text("");
+          let queryURL = "/block/" + $("#getBlockValue").val()
+          if ($("#getBlockValue").val() === "" ) {
+            alert("Block Number is Empty.\nPlease enter Block Number to retrieve...");
+          } else {
+            $.ajax({ 
+              url: queryURL,
+              method: "GET",
+              success: (res) => {
+                console.log("res", JSON.stringify(res, null, 2));
+                $("#returnedBlock").text(JSON.stringify(res, null, 2))
+                $("#getBlockBody").val("");
+                queryURL = "";
+              }
+            })
+          }
+        });
+
+        $("#newBlockBody").on("click", (e) => {
+          e.preventDefault();
+          $("#getBlockValue").val("");
+          $("#returnedBlock").text("");
+          let postURL = "/block";
+          if ($("#getBlockBody").val() === "" ) {
+            alert("Block Contents is Empty.\nPlease enter content in text box...");
+          } else {
+            $.ajax({ 
+              url: postURL,
+              method: "POST",
+              data: $("#getBlockBody").val(),
+              success: (res) => {
+                console.log("res", JSON.stringify(res, null, 2));
+                $("#returnedBlock").text(JSON.stringify(res, null, 2));
+                $("#getBlockValue").val("");
+                postURL = "";
+              },
+              error: function () {
+                alert("AJAX POST response error");
+              }
+            })
+          }
+        })
+
+      });
+      
+    </script>
+  </body>
+  </html>
